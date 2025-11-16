@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="IFES-SI-TPA-GRAFO-MAIOR-CLIQUE.jar" size="23764" download="eager" />
+    <jar href="IFES-SI-TPA-GRAFO-MAIOR-CLIQUE.jar" size="23805" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="IFES-SI-TPA-GRAFO-MAIOR-CLIQUE" >
     <param name="requiredFXVersion" value="8.0+"/>

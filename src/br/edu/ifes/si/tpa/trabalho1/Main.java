@@ -37,9 +37,14 @@ public class Main extends Application {
     MapColors mapColors;
 
     public static void main(String[] args) {
+        
         // Primeiro grafo:
-        String arquivo = args[0].substring(9);
-        String arquivoMap = args[1].substring(9);
+        String arquivo = "../_dados/grafo_sindrome_gripe.txt";;
+        
+        // Segundo grafo (Comente o arquivo acima e utilize o de baixo):
+        //String arquivo = "../_dados/grafo_comorbidades.txt";
+        
+        String arquivoMap = arquivo.replace(".txt", ".map");
         
         In in = new In(arquivo);
         G = new Grafo(in);
@@ -50,13 +55,7 @@ public class Main extends Application {
         
         // Segundo grafo:
         
-
-        /*
-        String arquivo = args[0].substring(9);
-        In in = new In(arquivo);
-        G = new Grafo(in);
-        launch();
-        */
+       
     }
 
     @Override
