@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="IFES-SI-TPA-GRAFO-MAIOR-CLIQUE.jnlp">
+  <information>
+    <title>IFES-SI-TPA-GRAFO-MAIOR-CLIQUE</title>
+    <vendor>Rafael</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="IFES-SI-TPA-GRAFO-MAIOR-CLIQUE.jar" size="23764" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="IFES-SI-TPA-GRAFO-MAIOR-CLIQUE" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="br.edu.ifes.si.tpa.trabalho1.Main"  name="IFES-SI-TPA-GRAFO-MAIOR-CLIQUE" >
+    <fx:param name="param1" value=""grafo_sindrome_gripe.txt""/>
+    <fx:param name="param2" value=""grafo_sindrome_gripe.map""/>
+  </jfx:javafx-desc>
+  <update check="always"/>
+</jnlp>
