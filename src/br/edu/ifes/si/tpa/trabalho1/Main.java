@@ -7,10 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sound.sampled.Line;
-import javax.swing.GroupLayout.Group;
-
-import org.w3c.dom.Text;
 
 import br.edu.ifes.si.tpa.trabalho1.algoritmos.AlgoritmoMaiorClique;
 import br.edu.ifes.si.tpa.trabalho1.estruturas.Aresta;
@@ -25,6 +21,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.scene.Group;
+import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
+
 
 public class Main extends Application {
 
