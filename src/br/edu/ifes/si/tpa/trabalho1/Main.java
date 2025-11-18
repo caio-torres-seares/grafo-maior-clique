@@ -1,23 +1,30 @@
 package br.edu.ifes.si.tpa.trabalho1;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.sound.sampled.Line;
+import javax.swing.GroupLayout.Group;
+
+import org.w3c.dom.Text;
+
 import br.edu.ifes.si.tpa.trabalho1.algoritmos.AlgoritmoMaiorClique;
 import br.edu.ifes.si.tpa.trabalho1.estruturas.Aresta;
 import br.edu.ifes.si.tpa.trabalho1.estruturas.Grafo;
 import br.edu.ifes.si.tpa.trabalho1.estruturas.In;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-
-import java.util.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 public class Main extends Application {
 
@@ -35,6 +42,12 @@ public class Main extends Application {
     Button btnClique = new Button("Executar Maior Clique");
 
     MapColors mapColors;
+    
+    // Animação:
+    private List<Integer> cliqueAtual = new ArrayList<>();
+    private List<Integer> maiorClique = new ArrayList<>();
+    
+    private long delay = 400;
 
     public static void main(String[] args) {
         
@@ -44,6 +57,9 @@ public class Main extends Application {
         // Segundo grafo (Comente o arquivo acima e utilize o de baixo):
         //String arquivo = "../_dados/grafo_comorbidades.txt";
         
+        // Grafo do teste de mesa:
+        //String arquivo = "../_dados/grafo_teste_mesa.txt";
+        
         String arquivoMap = arquivo.replace(".txt", ".map");
         
         In in = new In(arquivo);
@@ -52,10 +68,6 @@ public class Main extends Application {
         symptomMap = new SymptomMap(arquivoMap);
         
         launch();
-        
-        // Segundo grafo:
-        
-       
     }
 
     @Override
@@ -65,9 +77,28 @@ public class Main extends Application {
         btnClique.setLayoutY(20);
 
         btnClique.setOnAction((ActionEvent e) -> {
-            algoritmoClique = new AlgoritmoMaiorClique(G);
-            List<Integer> clique = algoritmoClique.encontrarMaiorClique();
-            destacarClique(clique);
+            // 1. Limpa o estado anterior
+            cliqueAtual.clear();
+            maiorClique.clear();
+            desenharGrafo(); 
+
+            // 2. Desativa o botão para não clicar de novo
+            btnClique.setDisable(true); 
+
+            // 3. Cria e inicia a Thread do algoritmo
+            Thread algorithmThread = new Thread(() -> {
+                
+                // 4. Chama a função recursiva (que vamos colar no Passo 4)
+                encontrarMaiorClique(0); 
+
+                // 5. Quando o algoritmo TERMINA, destaca o resultado final
+                Platform.runLater(() -> {
+                    destacarClique(maiorClique); 
+                    btnClique.setDisable(false); 
+                });
+            });
+            algorithmThread.setDaemon(true);
+            algorithmThread.start();
         });
 
         root.getChildren().add(btnClique);
@@ -169,17 +200,14 @@ public class Main extends Application {
         }
 
         // Pintar nós
-        for (int i = 0; i < nodesGroup.getChildren().size(); i += 2) {
+        for (int v = 0; v < G.V(); v++) {
+            // O Círculo do vértice 'v' é o item (v * 3) no nodesGroup
+            Circle circle = (Circle) nodesGroup.getChildren().get(v * 3);
 
-            Rectangle rect = (Rectangle) nodesGroup.getChildren().get(i);
-            Text tx = (Text) nodesGroup.getChildren().get(i + 1);
-
-            int id = symptomMap.getId(tx.getText());
-
-            if (cliqueSet.contains(id)) {
-                rect.setFill(Color.web("#FA0DA4"));
-                rect.setStroke(Color.BLACK);
-                rect.setStrokeWidth(2);
+            if (cliqueSet.contains(v)) {
+                circle.setFill(Color.web("#FA0DA4"));
+                circle.setStroke(Color.BLACK);
+                circle.setStrokeWidth(2);
             }
         }
     }
@@ -201,7 +229,7 @@ public class Main extends Application {
     private void posicionarVerticesEmCirculo() {
         int n = G.V();
         double cx = 450, cy = 350;
-        double r = 280;
+        double r = 180;
 
         for (int i = 0; i < n; i++) {
             double ang = 2 * Math.PI * i / n;
@@ -209,5 +237,63 @@ public class Main extends Application {
             double y = cy + r * Math.sin(ang);
             posicoes.put(i, new double[]{x, y});
         }
+    }
+    
+    // ------------------------------------------------------
+    // Animação do grafo detalhada
+    // ------------------------------------------------------
+    
+    private void pausarExecucao() {
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    
+    private void destacarVertice(int vertice, Color cor) {
+        if (vertice >= 0 && (vertice * 3) < nodesGroup.getChildren().size()) {
+            Circle circle = (Circle) nodesGroup.getChildren().get(vertice * 3);
+            circle.setFill(cor);
+        }
+    }
+    
+    private void encontrarMaiorClique(int vertice) {
+        
+        Platform.runLater(() -> destacarVertice(vertice, Color.YELLOW));
+        pausarExecucao();
+
+        if (vertice == G.V()) {
+            if (cliqueAtual.size() > maiorClique.size()) {
+                maiorClique = new ArrayList<>(cliqueAtual);
+                
+            }
+            return;
+        }
+
+        boolean podeAdicionar = true;
+        for (int v : cliqueAtual) {
+            if (!G.existeArestaEntre(vertice, v)) {
+                podeAdicionar = false;
+                break;
+            }
+        }
+
+        if (podeAdicionar) {
+            cliqueAtual.add(vertice);
+            Platform.runLater(() -> destacarVertice(vertice, Color.BLUEVIOLET));
+            pausarExecucao();
+
+            encontrarMaiorClique(vertice + 1); 
+
+            cliqueAtual.remove(cliqueAtual.size() - 1);
+            Platform.runLater(() -> destacarVertice(vertice, Color.LIGHTGRAY));
+            pausarExecucao();
+        }
+
+        Color corOriginal = mapColors.getColor(vertice);
+        Platform.runLater(() -> destacarVertice(vertice, corOriginal));
+
+        encontrarMaiorClique(vertice + 1);
     }
 }
