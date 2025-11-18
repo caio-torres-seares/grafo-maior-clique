@@ -22,8 +22,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.scene.control.Slider;
 
 
 public class Main extends Application {
@@ -72,6 +74,37 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        
+        Label labelVelocidade = new Label("Velocidade:");
+        labelVelocidade.setLayoutX(20);
+        labelVelocidade.setLayoutY(60);
+
+        Slider sliderDelay = new Slider(0, 1, 0.5);
+        sliderDelay.setLayoutX(120);
+        sliderDelay.setLayoutY(60);
+        sliderDelay.setPrefWidth(200);
+        
+        sliderDelay.setShowTickLabels(false);
+        sliderDelay.setShowTickMarks(false);
+        
+        
+        /*
+        sliderDelay.setMin(1000);  // valor maior = lento
+        sliderDelay.setMax(10);    // valor menor = rápido
+        sliderDelay.setValue(400); // inicial
+*/
+        int delayMin = 10;     // mais rápido
+        int delayMax = 1000; 
+
+
+        sliderDelay.valueProperty().addListener((obs, oldV, newV) -> {
+            double t = newV.doubleValue(); // varia de 0 a 1
+            delay = (int) (delayMax - t * (delayMax - delayMin));  
+            // esquerda (0) => delayMax
+            // direita (1) => delayMin
+        });
+
+
 
         btnClique.setLayoutX(20);
         btnClique.setLayoutY(20);
@@ -104,6 +137,7 @@ public class Main extends Application {
         root.getChildren().add(btnClique);
         root.getChildren().add(edgesGroup);
         root.getChildren().add(nodesGroup);
+        root.getChildren().addAll(labelVelocidade, sliderDelay);
 
         posicionarVerticesEmCirculo();
         mapColors = new MapColors(G);
